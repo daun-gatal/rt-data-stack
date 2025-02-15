@@ -1,0 +1,133 @@
+version: '3'
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.2.1
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9997:9997"
+    env_file:
+      - .env
+    volumes:
+      - ./scripts/kafka/update_run.sh:/tmp/update_run.sh
+    command: "bash -c 'if [ ! -f /tmp/update_run.sh ]; then echo \"ERROR: Did you forget the update_run.sh file that came with this docker-compose.yml file?\" && exit 1 ; else /tmp/update_run.sh && /etc/confluent/docker/run ; fi'"
+
+  kafka-init-topics:
+    image: confluentinc/cp-kafka:7.2.1
+    container_name: kafka-init
+    depends_on:
+      - kafka
+    env_file:
+      - .env
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+               cub kafka-ready -b kafka:29092 1 30 && \
+               kafka-topics --create --topic ${KAFKA_SOURCE_TOPIC} --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092'"
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - kafka-init-topics
+    env_file:
+      - .env
+
+  producer:
+    build: ./producer/.
+    container_name: python-producer
+    depends_on:
+      - kafka-ui
+    env_file:
+      - .env
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"  # MinIO API
+      - "9090:9090"  # MinIO Console
+    env_file:
+      - .env
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "minio server /data --console-address ':9090' & 
+      sleep 5 && 
+      /usr/bin/mc alias set myminio http://localhost:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} &&
+      /usr/bin/mc mb myminio/iceberg &&
+      /usr/bin/mc anonymous set public myminio/iceberg &&
+      wait"
+    volumes:
+      - ./.data/minio:/data
+
+  nessie:
+    image: ghcr.io/projectnessie/nessie:0.102.5
+    container_name: nessie
+    ports:
+      - "19120:19120"
+    depends_on:
+      - minio
+    env_file:
+      - .env
+
+  trino:
+    image: trinodb/trino:470
+    container_name: trino
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./conf/trino/iceberg.properties:/etc/trino/catalog/iceberg.properties
+    depends_on:
+      - nessie
+      - minio
+
+  jobmanager:
+    build: 
+      context: ./consumer/.
+      args:
+        CACHE_BUST: 1
+    depends_on:
+      - minio
+      - nessie
+      - kafka-ui
+    container_name: flink-jobmanager
+    ports:
+      - "8081:8081"
+    command: standalone-job --job-classname com.flink.iceberg.Main --jars /opt/flink/lib/consumer-1.0-SNAPSHOT.jar
+    env_file:
+      - .env
+    volumes:
+      - ./conf/flink/core-site.xml:/opt/flink/conf/core-site.xml
+
+  taskmanager:
+    build: 
+      context: ./consumer/.
+      args:
+        CACHE_BUST: 1
+    container_name: flink-taskmanager
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    scale: 1
+    env_file:
+      - .env
+    environment:
+      - FLINK_PROPERTIES=${TASKMANAGER_PROPERTIES}
+    volumes:
+      - ./conf/flink/core-site.xml:/opt/flink/conf/core-site.xml
+
+  grafana:
+    image: grafana/grafana:11.5.1
+    ports:
+     - 3000:3000
+    container_name: grafana
+    depends_on:
+      - trino
+    volumes:
+      - ./conf/grafana:/etc/grafana/provisioning/
+    environment:
+      GF_INSTALL_PLUGINS: "trino-datasource"
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "admin"

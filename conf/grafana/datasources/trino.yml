@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: Trino
+    type: trino-datasource
+    access: proxy
+    url: http://trino:8080
+    jsonData:
+      catalog: iceberg  # Change to your catalog (e.g., iceberg, hive, etc.)
+      schema: flink  # Change schema if needed
+      authType: basic  # Set authentication type to basic
+      tlsSkipVerify: true  # Skip TLS verification if using HTTP
+    secureJsonData:
+      basicAuthUser: default  # Trino username
+      basicAuthPassword: ""  # Trino password

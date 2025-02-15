@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.flink.iceberg</groupId>
+    <artifactId>consumer</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <flink.version>1.18.1</flink.version>
+        <iceberg.version>1.7.0</iceberg.version>
+        <json4s.version>4.0.7</json4s.version>
+        <kafka.version>3.4.0</kafka.version>
+        <gson.version>2.12.1</gson.version>
+        <hadoop.version>2.8.3</hadoop.version>
+    </properties>
+
+    <dependencies>
+    <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-java</artifactId>
+        <version>${flink.version}</version> <!-- Use your Flink version -->
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-table-api-java-bridge</artifactId>
+        <version>${flink.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+       <groupId>org.apache.flink</groupId>
+       <artifactId>flink-table-api-java</artifactId>
+       <version>${flink.version}</version>
+   </dependency>
+
+    <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-connector-base</artifactId>
+        <version>${flink.version}</version> <!-- Use the matching version -->
+    </dependency>
+
+    <!-- Iceberg Flink Runtime -->
+    <dependency>
+        <groupId>org.apache.iceberg</groupId>
+        <artifactId>iceberg-flink</artifactId>
+        <version>${iceberg.version}</version>
+    </dependency>
+
+    <dependency>
+       <groupId>org.apache.iceberg</groupId>
+       <artifactId>iceberg-core</artifactId>
+       <version>${iceberg.version}</version>
+   </dependency>
+
+    <dependency>
+        <groupId>org.apache.iceberg</groupId>
+        <artifactId>iceberg-flink-runtime-1.18</artifactId>
+        <version>${iceberg.version}</version>
+    </dependency>
+
+    <!-- Flink Table Common -->
+    <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-table-common</artifactId>
+        <version>${flink.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- JSON4S Extensions -->
+    <dependency>
+        <groupId>org.json4s</groupId>
+        <artifactId>json4s-ext_2.12</artifactId>
+        <version>${json4s.version}</version>
+    </dependency>
+
+    <!-- JSON4S Native -->
+    <dependency>
+        <groupId>org.json4s</groupId>
+        <artifactId>json4s-native_2.12</artifactId>
+        <version>${json4s.version}</version>
+    </dependency>
+
+    <!-- Iceberg AWS Bundle -->
+    <dependency>
+        <groupId>org.apache.iceberg</groupId>
+        <artifactId>iceberg-aws-bundle</artifactId>
+        <version>${iceberg.version}</version>
+    </dependency>
+
+    <!-- Flink Java Streaming -->
+    <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-streaming-java</artifactId>
+        <version>${flink.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+    <!-- Flink Kafka Connector -->
+    <dependency>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-connector-kafka</artifactId>
+        <version>3.2.0-1.18</version>
+    </dependency>
+
+    <!-- Kafka Dependencies -->
+    <dependency>
+        <groupId>org.apache.kafka</groupId>
+        <artifactId>kafka-clients</artifactId>
+        <version>${kafka.version}</version> <!-- Or any version that matches your Kafka version -->
+    </dependency>
+
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${gson.version}</version>  <!-- Use the latest version -->
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-common</artifactId>
+        <version>${hadoop.version}</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+
+<build>
+      <plugins>
+        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.0</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.0.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.8.2</version>
+        </plugin>
+        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.7.1</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>3.2.1</version>
+            <executions>
+                <execution>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>shade</goal>
+                    </goals>
+                    <configuration>
+                        <transformers>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <mainClass>com.flink.iceberg.Main</mainClass>
+                            </transformer>
+                        </transformers>
+                        <filters>
+                            <!-- Optionally, you can filter out specific classes if needed -->
+                            <filter>
+                                <artifact>*:*</artifact>
+                                <excludes>
+                                    <exclude>META-INF/*.SF</exclude>
+                                    <exclude>META-INF/*.DSA</exclude>
+                                    <exclude>META-INF/*.RSA</exclude>
+                                </excludes>
+                            </filter>
+                        </filters>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+      </plugins>
+  </build>
+</project>
