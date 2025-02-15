@@ -37,20 +37,17 @@ Starts all necessary services using Docker Compose.
 - Creates a `.data/minio` directory to persist MinIO data.
 - Ensures proper permissions are set for the MinIO data directory.
 - Runs `docker-compose up -d` to start all services in detached mode.
-- Displays a message indicating that services are up and running.
 
 #### `down`
 Stops and removes all running services.
 - Executes `docker-compose down -v` to stop and remove containers, networks, and volumes.
 - Deletes the `.data` directory to clean up any persisted data.
-- Displays a message confirming cleanup completion.
 
 #### `cleanup`
 Performs a thorough cleanup by checking if Docker Compose is running and removing all related images.
 - Checks if any Docker Compose services are running.
 - If running, it first stops them using the `down` command.
 - Removes all Docker Compose-related images using `docker-compose down -v --rmi all`.
-- Displays a message confirming cleanup completion.
 
 To use these commands, simply run:
 ```bash
