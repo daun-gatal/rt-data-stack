@@ -59,14 +59,6 @@ make down     # Stop services and remove data
 make cleanup  # Stop services and remove images
 ```
 
-## Future Enhancements
-- Implement schema evolution in Iceberg.
-- Automate Flink job submission.
-- Add data quality checks in the pipeline.
-
-## License
-MIT License. Feel free to use and modify this project for learning purposes.
-
 ---
 
 ### Contributions
