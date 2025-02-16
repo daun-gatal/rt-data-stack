@@ -4,6 +4,8 @@ This project is part of my **Data Engineering learning journey**, focusing on im
 
 ## 🚀 Project Overview
 
+![Data Flow](images/flow.png)
+
 The pipeline follows these key steps:
 1. **Kafka**: Captures and stores incoming ride event data.
 2. **Python Producer**: Generates dummy ride events and pushes them to Kafka.
